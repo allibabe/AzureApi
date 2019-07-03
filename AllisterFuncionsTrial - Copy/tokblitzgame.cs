@@ -94,11 +94,7 @@ namespace AllisterFuncionsTrial
 
         }
 
-
-
-
-
-
+        
 
         private const string resource = "user";
 
@@ -170,40 +166,7 @@ namespace AllisterFuncionsTrial
             return item;
         }
 
-        private const string resource3 = "CoinsStrikes";
-        [FunctionName("CoinsAndStrikes")]
-        public static async Task<IActionResult> CoinsStrikesUpdate([HttpTrigger(AuthorizationLevel.Function, "put", Route = Constants.Version + "/" + resource3 + "/{id}")]HttpRequest req, ILogger log,
-          ExecutionContext context, string id)
-        {
-            try
-            {
-             
-                var item = await Api<dynamic>.GetItemAsyncInKnowledge(id + "-counter", Constants.PkRequest(id + "-counter"));
-                string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-
-                var newItem = JsonConvert.DeserializeObject<dynamic>(requestBody);
-                /// make sure to put value in coins (0) if the only thing that needs to be updated is the strikes
-                if (newItem.coins == 0 || newItem.coins == null)
-                {
-
-                }
-                else
-                {
-
-                    item.coins = newItem.coins;
-                }
-
-
-                item.tokblitz_strikes = newItem.tokblitz_strikes;
-                await Api<dynamic>.UpdateItemAsync(item.id, item, Constants.PkRequest(item.pk));
-                return new OkResult();
-            }
-            catch (Exception e)
-            {
-                return new BadRequestObjectResult(e.Message);
-            }
-        }
-
+    
             //        // only needed is the plain id and request body (ei {
             //    "id":"KDXLgt81yXUcJk9PIM6KMssWMwk1-counter",
             //    "tokblitz_saved":3
@@ -246,9 +209,8 @@ namespace AllisterFuncionsTrial
 
         // new save games API
 
-        private const string SaveGames = "SaveGames";
         [FunctionName("saveGamesFunction")]
-        public static async Task<IActionResult> saveGamesFunction([HttpTrigger(AuthorizationLevel.Function, "post", Route = Constants.Version + "/" + "SaveGames" + "/" +"{id}")]HttpRequest req, ILogger log,
+        public static async Task<IActionResult> save_games_function([HttpTrigger(AuthorizationLevel.Function, "post", Route = Constants.Version + "/" + "savegames" + "/" +"{id}")]HttpRequest req, ILogger log,
           ExecutionContext context, string id)
         {
             try
@@ -269,13 +231,13 @@ namespace AllisterFuncionsTrial
                    // dynamic requestBodyFromItem = await new StreamReader(req.Body).ReadToEndAsync();
 
                   
-                    if (itemTosendFirst.tokblitz_saved !=0) {
-                        itemToUpdate.TokblitzSaved = itemTosendFirst.tokblitz_saved;
+                    if (itemTosendFirst.tokblitzsaved !=0) {
+                        itemToUpdate.tokblitzsaved = itemTosendFirst.tokblitzsaved;
                     }
 
-                    if (itemTosendFirst.tokBlastSaved != 0)
+                    if (itemTosendFirst.tokblastsaved != 0)
                     {
-                        itemToUpdate.tokBlastSaved = itemTosendFirst.tokBlastSaved;
+                        itemToUpdate.tokblastsaved = itemTosendFirst.tokblastsaved;
                     }
 
 
@@ -322,8 +284,8 @@ namespace AllisterFuncionsTrial
             public List<int> level { get; set; }
             public List<string> Toks { get; set; }
             public string User_id { get; set; }
-            public int tokBlastSaved { get; set; } = 0;
-            public int tokblitz_saved { get; set; } = 0;
+            public int tokblastsaved { get; set; } = 0;
+            public int tokblitzsaved { get; set; } = 0;
         }
 
 
@@ -341,7 +303,7 @@ namespace AllisterFuncionsTrial
 
 
             [JsonProperty(PropertyName = "coins")]
-            public int Coins { get; set; }
+            public int Coins { get; set; } = 0;
 
             [JsonProperty(PropertyName = "tokblitz_strikes")]
             public int TokblitzStrikes { get; set; }

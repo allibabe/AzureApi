@@ -42,19 +42,19 @@ namespace AllisterFuncionsTrial.Models
         [JsonProperty("tokblitz_strikes", NullValueHandling = NullValueHandling.Ignore)]
         public long? StrikesTokBlitz { get; set; } = null;
 
-        [JsonProperty("tokblitzSaved", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty("tokblitz_saved", NullValueHandling = NullValueHandling.Ignore)]
         public long? TokblitzSaved { get; set; } = null;
 
         // new from allister
-        [JsonProperty("tokBlastSaved", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty("tokblast_saved", NullValueHandling = NullValueHandling.Ignore)]
         public long? TokblastSaved { get; set; } = null;
-
+                          
 
         [JsonProperty("tokblitz_deleted_strikes", NullValueHandling = NullValueHandling.Ignore)]
         public long? DeletedStrikesTokBlitz { get; set; } = null;
 
-        [JsonProperty("tokblitz_saved", NullValueHandling = NullValueHandling.Ignore)]
-        public long? SavedTokBlitz { get; set; } = null;
+        //[JsonProperty("tokblitz_saved", NullValueHandling = NullValueHandling.Ignore)]
+        //public long? SavedTokBlitz { get; set; } = null;
         #endregion
 
         #region Reactions
