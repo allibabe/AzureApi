@@ -7,30 +7,106 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using AllisterFuncionsTrial.Services;
+using AllisterFuncionsTrial.Models;
+using Microsoft.Azure.Documents.Client;
 
 namespace AllisterFuncionsTrial
 {
     public static class tokblitzgetuserdata
     {
-        // this function is the one responsible for getting the data of the user oncce they logged in successfully
+        private const string resource = "knowledgeandusers";
+        [FunctionName("GetInknowledgeandusers")]
+        public static async Task<IActionResult> UserGetInknowledgeAndUsers([HttpTrigger(AuthorizationLevel.Function, "get", Route = Constants.Version + "/" + resource + "/{id}")]HttpRequest req, ILogger log,
+           ExecutionContext context, string id)
+        {
+            try
+            {
+                var item = await GetUserAndKnowledge(id);
+
+                if (item == null)
+                    return new NotFoundResult();
+                //if (!item.IsValidUser())
+                //    return new BadRequestResult();
+
+                return new OkObjectResult(item);
+            }
+            catch (Exception e)
+            {
+                return new BadRequestObjectResult(e.Message);
+            }
+        }
         
-        //[FunctionName("tokblitzgetuserdata")]
-        //public static async Task<IActionResult> Run(
-        //    [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
-        //    ILogger log)
-        //{
-        //    log.LogInformation("C# HTTP trigger function processed a request.");
+        public static async Task<dynamic> GetUserAndKnowledge(string id)
+        {
+            RequestOptions options;
+            options = Constants.PkRequest(id);
+            var  item = await Api<TokketUsers>.GetItemAsyncInUsers(id, options);
 
-        //    string name = req.Query["name"];
+            ////Get {userlocalid}-counter
+            ///
+            var counter = await Api<UserCounter>.GetItemAsyncInKnowledge(id + "-counter", Constants.PkRequest(id + "-counter"));
 
-        //    string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-        //    dynamic data = JsonConvert.DeserializeObject(requestBody);
-        //    name = name ?? data?.name;
+            if (counter != null)
+            {
+                // mix and appen the data or user container and knowledge as one
+                item.SetCounts(counter);
+            }
 
-        //    return name != null
-        //        ? (ActionResult)new OkObjectResult($"Hello, {name}")
-        //        : new BadRequestObjectResult("Please pass a name on the query string or in the request body");
-        //}
+
+            return item;
+        }
+
+
+
+        public static TokketUsers SetCounts(this TokketUsers user, UserCounter counter)
+        {
+            if (counter == null)
+            {
+                user.Toks = 0;
+                user.Points = 0;
+                user.Coins = 0;
+                user.Sets = 0;
+                user.StrikesTokBlitz = 0;
+                user.Reactions = 0;
+                user.Likes = 0;
+                user.Dislikes = 0;
+                user.Accurates = 0;
+                user.Inaccurates = 0;
+                user.Comments = 0;
+                user.Reports = 0;
+                user.Followers = 0;
+                user.Following = 0;
+            }
+            else
+            {
+               
+                user.Toks = (counter?.Toks != null) ? (long)(counter?.Toks) : 0;
+                user.Points = (counter?.Points != null) ? (long)(counter?.Points) : 0;
+                user.Coins = (counter?.Coins != null) ? (long)(counter?.Coins) : 0;
+                user.Sets = (counter?.Sets != null) ? (long)(counter?.Sets) : 0;
+                user.StrikesTokBlitz = (counter?.StrikesTokBlitz != null) ? (long)(counter?.StrikesTokBlitz) : 0;
+                user.Reactions = (counter?.Reactions != null) ? (long)(counter?.Reactions) : 0;
+                user.Likes = (counter?.Likes != null) ? (long)(counter?.Likes) : 0;
+                user.Dislikes = (counter?.Dislikes != null) ? (long)(counter?.Dislikes) : 0;
+                user.Accurates = (counter?.Accurates != null) ? (long)(counter?.Accurates) : 0;
+                user.Inaccurates = (counter?.Inaccurates != null) ? (long)(counter?.Inaccurates) : 0;
+                user.Comments = (counter?.Comments != null) ? (long)(counter?.Comments) : 0;
+                user.Reports = (counter?.Reports != null) ? (long)(counter?.Reports) : 0;
+                user.Followers = (counter?.Followers != null) ? (long)(counter?.Followers) : 0;
+                user.Following = (counter?.Following != null) ? (long)(counter?.Following) : 0;
+                user.SavedTokBlitz = (counter?.TokblitzSaved != null) ? (long)(counter?.TokblitzSaved) : 0;
+                user.SavedTokBlast = (counter?.TokblastSaved != null) ? (long)(counter?.TokblastSaved) : 0;
+                user.tokblitzNumTeam = (counter?.tokblitzNumTeam != null) ? (int)(counter?.tokblitzNumTeam) : 0;
+            }
+
+            return user;
+        }
+
+
+
+
+
 
     }
 }

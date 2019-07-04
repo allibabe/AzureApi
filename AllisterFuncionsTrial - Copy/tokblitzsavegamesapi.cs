@@ -7,32 +7,30 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using AllisterFuncionsTrial.Models;
 
 namespace AllisterFuncionsTrial
 {
     public static class tokblitzsavegamesapi
     {
-        //[FunctionName("tokblitzsavegamesapi")]
-        //public static async Task<IActionResult> Run(
-        //    [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
-        //    ILogger log)
-        //{
-        //    log.LogInformation("C# HTTP trigger function processed a request.");
+        [FunctionName("tokblitzsavegamesapi")]
+        public static async Task<IActionResult> tokblitzsavegameapi([HttpTrigger(AuthorizationLevel.Function, "post", Route = Constants.Version + "tokblitzsavegame")]HttpRequest req, ILogger log,
+          ExecutionContext context)
+        {
 
-        //    string name = req.Query["name"];
+            //await Api<newSavedGames>.DeleteItemAsync(id, Constants.PkRequest(id));
 
-        //    string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-        //    dynamic data = JsonConvert.DeserializeObject(requestBody);
-        //    name = name ?? data?.name;
-
-        //    return name != null
-        //        ? (ActionResult)new OkObjectResult($"Hello, {name}")
-        //        : new BadRequestObjectResult("Please pass a name on the query string or in the request body");
-        //}
-
-
+            return new OkResult();
+        }
 
 
 
     }
+}
+
+
+    public class save_games_class{
+
+    public string id { get; set; }
+
 }

@@ -120,28 +120,7 @@ namespace AllisterFuncionsTrial
         }
 
 
-        private const string resource2 = "knowledge";
-        [FunctionName("GetInknowledge")]
-        public static async Task<IActionResult> UserGetInknowledge2([HttpTrigger(AuthorizationLevel.Function, "get", Route = Constants.Version + "/" + resource2 + "/{id}")]HttpRequest req, ILogger log,
-           ExecutionContext context, string id)
-        {
-            try
-            {
-                var item = await GetUserKowledge(id);
-
-                if (item == null)
-                    return new NotFoundResult();
-                //if (!item.IsValidUser())
-                //    return new BadRequestResult();
-
-                return new OkObjectResult(item);
-            }
-            catch (Exception e)
-            {
-                return new BadRequestObjectResult(e.Message);
-            }
-        }
-
+        
 
 
 
@@ -339,8 +318,6 @@ namespace AllisterFuncionsTrial
             TokketUsers item = null;
             RequestOptions options;
             options = Constants.PkRequest(id);
-            //Constants.DatabaseId = "TokketUsers"; Constants.CollectionId = "Users";
-
             item = await Api<dynamic>.GetItemAsyncInUsers(id, options);
 
             ////Get counter
@@ -353,6 +330,7 @@ namespace AllisterFuncionsTrial
 
             return item;
         }
+
 
 
         // delete saved Games all new
@@ -368,49 +346,49 @@ namespace AllisterFuncionsTrial
 
 
 
+        //// changer from tokketuser to usercounter
+        //public static TokketUsers SetCounts(this TokketUsers user, UserCounter counter)
+        //{
+        //    if (counter == null)
+        //    {
+        //        user.Toks = 0;
+        //        user.Points = 0;
+        //        user.Coins = 0;
+        //        user.Sets = 0;
+        //        user.StrikesTokBlitz = 0;
+        //        user.Reactions = 0;
+        //        user.Likes = 0;
+        //        user.Dislikes = 0;
+        //        user.Accurates = 0;
+        //        user.Inaccurates = 0;
+        //        user.Comments = 0;
+        //        user.Reports = 0;
+        //        user.Followers = 0;
+        //        user.Following = 0;
+        //    }
+        //    else
+        //    {
+        //        user.Toks = (counter?.Toks != null) ? (long)(counter?.Toks) : 0;
+        //        user.Points = (counter?.Points != null) ? (long)(counter?.Points) : 0;
+        //        user.Coins = (counter?.Coins != null) ? (long)(counter?.Coins) : 0;
+        //        user.Sets = (counter?.Sets != null) ? (long)(counter?.Sets) : 0;
+        //        user.StrikesTokBlitz = (counter?.StrikesTokBlitz != null) ? (long)(counter?.StrikesTokBlitz) : 0;
+        //        user.Reactions = (counter?.Reactions != null) ? (long)(counter?.Reactions) : 0;
+        //        user.Likes = (counter?.Likes != null) ? (long)(counter?.Likes) : 0;
+        //        user.Dislikes = (counter?.Dislikes != null) ? (long)(counter?.Dislikes) : 0;
+        //        user.Accurates = (counter?.Accurates != null) ? (long)(counter?.Accurates) : 0;
+        //        user.Inaccurates = (counter?.Inaccurates != null) ? (long)(counter?.Inaccurates) : 0;
+        //        user.Comments = (counter?.Comments != null) ? (long)(counter?.Comments) : 0;
+        //        user.Reports = (counter?.Reports != null) ? (long)(counter?.Reports) : 0;
+        //        user.Followers = (counter?.Followers != null) ? (long)(counter?.Followers) : 0;
+        //        user.Following = (counter?.Following != null) ? (long)(counter?.Following) : 0;
+        //        user.SavedTokBlitz = (counter?.TokblitzSaved != null) ? (long)(counter?.TokblitzSaved) : 0;
+        //        user.SavedTokBlast = (counter?.TokblastSaved!=null)? (long)(counter?.TokblastSaved) : 0;
+        //        user.tokblitzNumTeam = (counter?.tokblitzNumTeam != null) ? (int)(counter?.tokblitzNumTeam) : 0;
+        //    }
 
-        public static TokketUsers SetCounts(this TokketUsers user, UserCounter counter)
-        {
-            if (counter == null)
-            {
-                user.Toks = 0;
-                user.Points = 0;
-                user.Coins = 0;
-                user.Sets = 0;
-                user.StrikesTokBlitz = 0;
-                user.Reactions = 0;
-                user.Likes = 0;
-                user.Dislikes = 0;
-                user.Accurates = 0;
-                user.Inaccurates = 0;
-                user.Comments = 0;
-                user.Reports = 0;
-                user.Followers = 0;
-                user.Following = 0;
-            }
-            else
-            {
-                user.Toks = (counter?.Toks != null) ? (long)(counter?.Toks) : 0;
-                user.Points = (counter?.Points != null) ? (long)(counter?.Points) : 0;
-                user.Coins = (counter?.Coins != null) ? (long)(counter?.Coins) : 0;
-                user.Sets = (counter?.Sets != null) ? (long)(counter?.Sets) : 0;
-                user.StrikesTokBlitz = (counter?.Strikes != null) ? (long)(counter?.StrikesTokBlitz) : 0;
-                user.Reactions = (counter?.Reactions != null) ? (long)(counter?.Reactions) : 0;
-                user.Likes = (counter?.Likes != null) ? (long)(counter?.Likes) : 0;
-                user.Dislikes = (counter?.Dislikes != null) ? (long)(counter?.Dislikes) : 0;
-                user.Accurates = (counter?.Accurates != null) ? (long)(counter?.Accurates) : 0;
-                user.Inaccurates = (counter?.Inaccurates != null) ? (long)(counter?.Inaccurates) : 0;
-                user.Comments = (counter?.Comments != null) ? (long)(counter?.Comments) : 0;
-                user.Reports = (counter?.Reports != null) ? (long)(counter?.Reports) : 0;
-                user.Followers = (counter?.Followers != null) ? (long)(counter?.Followers) : 0;
-                user.Following = (counter?.Following != null) ? (long)(counter?.Following) : 0;
-                user.SavedTokBlitz = (counter?.TokblitzSaved != null) ? (long)(counter?.TokblitzSaved) : 0;
-                user.SavedTokBlast = (counter?.TokblastSaved!=null)? (long)(counter?.TokblastSaved) : 0;
-
-            }
-
-            return user;
-        }
+        //    return user;
+        //}
 
 
 

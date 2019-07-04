@@ -27,6 +27,13 @@ namespace AllisterFuncionsTrial.Services
             return await Constants.Client.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri(Constants.DatabaseId, Constants.CollectionId), item, options);
         }
 
+        public static async Task<Document> CreateItemAsyncKnowledge(T item, RequestOptions options)
+        {
+            return await Constants.Client.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri(Constants.DatabaseId, Constants.CollectionIdProd), item, options);
+        }
+
+
+
 
         public static async Task<T> GetItemAsync(string id, RequestOptions options)
         {

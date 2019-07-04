@@ -48,7 +48,11 @@ namespace AllisterFuncionsTrial.Models
         // new from allister
         [JsonProperty("tokblast_saved", NullValueHandling = NullValueHandling.Ignore)]
         public long? TokblastSaved { get; set; } = null;
-                          
+
+        // new from allister 
+        [JsonProperty("tokblitz_num_team", NullValueHandling = NullValueHandling.Ignore)]
+        public int? tokblitzNumTeam { get; set; } = null;
+                      
 
         [JsonProperty("tokblitz_deleted_strikes", NullValueHandling = NullValueHandling.Ignore)]
         public long? DeletedStrikesTokBlitz { get; set; } = null;
