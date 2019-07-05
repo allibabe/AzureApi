@@ -29,8 +29,13 @@ namespace AllisterFuncionsTrial.Services
 
         public static async Task<Document> CreateItemAsyncKnowledge(T item, RequestOptions options)
         {
+         
             return await Constants.Client.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri(Constants.DatabaseId, Constants.CollectionIdProd), item, options);
         }
+
+        private static FeedOptions getalli = new FeedOptions { MaxItemCount = -1 };
+
+      
 
 
 
@@ -74,7 +79,7 @@ namespace AllisterFuncionsTrial.Services
         {
             try
             {
-                Microsoft.Azure.Documents.Document document = await Constants.Client.ReadDocumentAsync(UriFactory.CreateDocumentUri(Constants.DatabaseIdProd, Constants.CollectionIdProd, id), options);
+                Microsoft.Azure.Documents.Document document = await Constants.Client.ReadDocumentAsync(UriFactory.CreateDocumentUri(Constants.DatabaseIdProd, Constants.CollectionIdProd,id), options);
                 return (T)(dynamic)document;
             }
             catch (DocumentClientException e)
@@ -90,7 +95,7 @@ namespace AllisterFuncionsTrial.Services
         public static async Task<T> GetItemAsyncInUsers(string id, RequestOptions options)
         {
             try
-            {
+            {                                                                                               
                 Microsoft.Azure.Documents.Document document = await Constants.Client.ReadDocumentAsync(UriFactory.CreateDocumentUri(Constants.DatabaseIdProd, Constants.CollectionIdProdUsers, id), options);
                 return (T)(dynamic)document;
             }

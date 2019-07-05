@@ -117,19 +117,19 @@ namespace AllisterFuncionsTrial.Models
         [JsonProperty(PropertyName = "reaction_partitions", NullValueHandling = NullValueHandling.Ignore)]
         public long? ReactionPartitions { get; set; } = null;
 
-        [JsonRequired]
+        //[JsonRequired]
         [JsonProperty(PropertyName = "user_id")]
         public string UserId { get; set; } = "user";
 
-        [JsonRequired]
+       // [JsonRequired]
         [JsonProperty(PropertyName = "label")]
         public string Label { get; set; } = "usercounter";
 
-        [JsonRequired]
+        //[JsonRequired]
         [JsonProperty(PropertyName = "pk")]
         public string PartitionKey { get; set; }
 
-        [JsonRequired]
+        //[JsonRequired]
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
 
