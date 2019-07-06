@@ -33,13 +33,17 @@ namespace AllisterFuncionsTrial.Services
             return await Constants.Client.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri(Constants.DatabaseId, Constants.CollectionIdProd), item, options);
         }
 
+        public static async Task<Document> CreateItemAsyncGames(T item, RequestOptions options)
+        {
+
+            return await Constants.Client.CreateDocumentAsync(UriFactory.CreateDocumentCollectionUri(Constants.DatabaseId, Constants.CollectionId), item, options);
+        }
+
+
+
         private static FeedOptions getalli = new FeedOptions { MaxItemCount = -1 };
-
-      
-
-
-
-
+                
+         // get in games container
         public static async Task<T> GetItemAsync(string id, RequestOptions options)
         {
             try
@@ -55,10 +59,10 @@ namespace AllisterFuncionsTrial.Services
         }
 
 
-        
 
 
-            public static async Task<T> GetItemAsyncSaved(string pk)
+        // get in games container
+        public static async Task<T> GetItemAsyncSaved(string pk)
         {
             try
             {
@@ -115,7 +119,7 @@ namespace AllisterFuncionsTrial.Services
             return await Constants.Client.ReplaceDocumentAsync(UriFactory.CreateDocumentUri(Constants.DatabaseId, Constants.CollectionIdProd, id), item, options);
         }
 
-        ///  updates the saved games
+        ///  updates the saved games  ("Games container")
         public static async Task<Document> UpdateItemAsyncSaveGames(string id, T item, RequestOptions options)
         {
             return await Constants.Client.ReplaceDocumentAsync(UriFactory.CreateDocumentUri(Constants.DatabaseId, Constants.CollectionId, id), item, options);
@@ -124,7 +128,7 @@ namespace AllisterFuncionsTrial.Services
 
 
 
-
+         // this will delete in games container
         public static async Task DeleteItemAsync(string id, RequestOptions options)
         {
             await Constants.Client.DeleteDocumentAsync(UriFactory.CreateDocumentUri(Constants.DatabaseId, Constants.CollectionId, id), options);

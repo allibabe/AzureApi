@@ -15,51 +15,128 @@ using Microsoft.Azure.Documents.Client;
 using System.Reflection.Metadata;
 using AllisterFuncionsTrial.Services;
 using System.Collections;
+using Newtonsoft.Json.Serialization;
 
 namespace AllisterFuncionsTrial
 {
     public static class tokblitzgetteams
     {
-        private static FeedOptions getalli = new FeedOptions { MaxItemCount = -1, EnableCrossPartitionQuery = true };
-
+        private static FeedOptions _crosspartition = new FeedOptions { MaxItemCount = -1, EnableCrossPartitionQuery = true };
+         // gets the team of a particular user
+         // query string should have an id appended on it
         [FunctionName("tokblitzgetteams")]
-        public static async Task<IActionResult> getter([HttpTrigger(AuthorizationLevel.Function, "get", Route = Constants.Version + "/" + "try" )]HttpRequest req, ILogger log,
+        public static async Task<IActionResult> getter([HttpTrigger(AuthorizationLevel.Function, "get", Route = Constants.Version + "/" + "getteams/"+"{id}" )]HttpRequest req, ILogger log,
+         ExecutionContext context , string id)
+        {
+            // here , we get first all te data in games cpntainer
+            IQueryable<tokblitzTeamClass> Teams = Constants.Client.CreateDocumentQuery<tokblitzTeamClass>(
+            UriFactory.CreateDocumentCollectionUri(Constants.DatabaseId,Constants.CollectionId),_crosspartition);
+
+            // append the {userlocalid}-tokblitzteam 
+            string getId = id + "-tokblitzteam";
+            // get all the team of a particular user
+            IEnumerable<tokblitzTeamClass> get_team = Teams.Where(x => x.owned_by == getId);
+            return new OkObjectResult(get_team);
+        }
+
+         // insert team created by the user
+        [FunctionName("tokblitzinsertteam")]
+        public static async Task<IActionResult> insertTeam([HttpTrigger(AuthorizationLevel.Function, "post", Route = Constants.Version + "/" + "insertteam") ]HttpRequest req, ILogger log,
          ExecutionContext context)
         {
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            tokblitzTeamClass getrequest = JsonConvert.DeserializeObject<tokblitzTeamClass>(requestBody);
+            getrequest.owned_by = getrequest.id + "-tokblitzteam";
+            getrequest.id = getrequest.id + Guid.NewGuid();
 
-            //var alligetter = await Api<dynamic>.getall();
-
-
-               IQueryable<UserCounter> family = Constants.Client.CreateDocumentQuery<UserCounter>(
-               UriFactory.CreateDocumentCollectionUri(Constants.DatabaseId,Constants.CollectionIdProdUsers),getalli);
-
-            //var a = ((IEnumerable)family).Cast<dynamic>()
-            //                .Where(p => p.id == "1tULByrYkkdXQzvRVR3EZqavKZh1");
-
-            //List<dynamic> gets = JsonConvert.DeserializeObject<List<dynamic>>(family);
-
-            IEnumerable<UserCounter> getterlast = family.Where(x => x.Likes == 1);
-                               
-
-
-
-            //var tt = from name in family
-            //         where name.('a')
-            //         select name;
-
-            return new OkObjectResult(getterlast);
+            var item = await Api<tokblitzTeamClass>.CreateItemAsyncGames(getrequest,Constants.PkRequest(getrequest.id));
+            return new OkResult();
         }
 
-       
-        public static UserCounter GetItemAsync()
+
+        // deletes the team created by the user
+        [FunctionName("deletetokblitzteam")]
+        public static async Task<IActionResult> deletetokblitzteam([HttpTrigger(AuthorizationLevel.Function, "delete", Route = Constants.Version + "/" + "deletetokblitzteam/" + "{id}")]HttpRequest req, ILogger log,
+        ExecutionContext context, string id)
         {
-            IQueryable<UserCounter> familyQuery = Constants.Client.CreateDocumentQuery<UserCounter>(
-            UriFactory.CreateDocumentCollectionUri(Constants.DatabaseIdProd, Constants.CollectionIdProd), null)
-           .Where(f => f.Id == "1tULByrYkkdXQzvRVR3EZqavKZh1-counter");
-            var all =  familyQuery;
-                            
-            return familyQuery.FirstOrDefault(x => x.Id== "1tULByrYkkdXQzvRVR3EZqavKZh1-counter");
+            await Api<tokblitzTeamClass>.DeleteItemAsync(id ,Constants.PkRequest(id));
+
+            return new OkResult();
         }
+
+
+         //updates the team data of the user
+        [FunctionName("updatetokblitzteam")]
+        public static async Task<IActionResult> updatetokblitzteam([HttpTrigger(AuthorizationLevel.Function, "put", Route = Constants.Version + "/" + "updatetokblitzteam/" + "{id}")]HttpRequest req, ILogger log,
+        ExecutionContext context, string id)
+        {
+
+            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            tokblitzTeamClass newItem = JsonConvert.DeserializeObject<tokblitzTeamClass>(requestBody);
+             try {
+
+                tokblitzTeamClass game = await Api<tokblitzTeamClass>.GetItemAsync(id, Constants.PkRequest(id));
+                tokblitzTeamClass holder = new tokblitzTeamClass();
+
+                if (newItem.id != null || newItem.id != "")
+                {
+
+
+                    if (newItem.country == null || newItem.country == "")
+                    {
+                        newItem.country = game.country;
+                    }
+                    if (newItem.teamname == null || newItem.teamname.Equals(""))
+                    {
+                        newItem.teamname = game.teamname;
+                    }
+              
+                    if (newItem.teamimage == null || newItem.teamimage.Equals(""))
+                    {
+                        newItem.teamimage = game.teamimage;
+                    }
+
+                    if (newItem.owned_by == null || newItem.owned_by.Equals(""))
+                    {
+                        newItem.owned_by = game.owned_by;
+                    }
+
+                    if (newItem.teampoints.Equals(null) || newItem.teampoints == 0)
+                    {
+                        newItem.teampoints = game.teampoints;
+                    }
+                  await Api<tokblitzTeamClass>.UpdateItemAsyncSaveGames(game.id, newItem, Constants.PkRequest(game.id));
+                    return new OkResult();
+                }
+                else
+                {
+
+                    return new BadRequestResult();
+
+                }
+
+            }
+       catch (Exception e)
+            {
+                return new BadRequestObjectResult(e.Message);
+
+            }
+      }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     }
 }
