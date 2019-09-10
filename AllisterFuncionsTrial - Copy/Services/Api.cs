@@ -1,8 +1,11 @@
 ﻿using AllisterFuncionsTrial.Models;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
+using Microsoft.Azure.Documents.Linq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -134,10 +137,36 @@ namespace AllisterFuncionsTrial.Services
             await Constants.Client.DeleteDocumentAsync(UriFactory.CreateDocumentUri(Constants.DatabaseId, Constants.CollectionId, id), options);
         }
 
+        public static async Task<T> IncrementCountAsync(string id, string updateString, RequestOptions options)
+        {
+            var result = await Constants.Client.ExecuteStoredProcedureAsync<T>(
+                UriFactory.CreateStoredProcedureUri(Constants.DatabaseId, Constants.CollectionId, "update"),
+                options, id, updateString);
+            return result.Response;
+        }
 
 
 
+     
+        //public static async Task<T> GetItemsByChoice(Expression<Func<T, bool>> predicate, FeedOptions options = null, bool descending = true)
+        //{
+        //    if (options == null) options = new FeedOptions() { EnableCrossPartitionQuery = true }; else options.EnableCrossPartitionQuery = true;
 
+        //    IDocumentQuery<T> query;
+        //    query = Constants.Client.CreateDocumentQuery<T>(
+        //        UriFactory.CreateDocumentCollectionUri(Constants.DatabaseId, Constants.CollectionId),
+        //        options)
+        //        .Where(predicate)
+        //        .AsDocumentQuery();
+
+        //    List<T> results = new List<T>();
+        //    if (query.HasMoreResults) 
+        //    {
+        //        var result = await query.ExecuteNextAsync<T>();
+        //        results.AddRange(result);
+        //    }
+        //    return (T)(dynamic) results;
+        //}
 
     }
 }

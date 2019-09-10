@@ -161,14 +161,14 @@ namespace AllisterFuncionsTrial
             try
             {
 
-                var item = await Api<dynamic>.GetItemAsyncInKnowledge(id + "-counter", Constants.PkRequest(id + "-counter"));
+                var item = await Api<UserCounter>.GetItemAsyncInKnowledge(id + "-counter", Constants.PkRequest(id + "-counter"));
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
-                var newItem = JsonConvert.DeserializeObject<dynamic>(requestBody);
-              
-                
-                item.TokblitzSaved = newItem.tokblitz_saved;
-                await Api<dynamic>.UpdateItemAsync(item.id, item, Constants.PkRequest(item.pk));
+                var newItem = JsonConvert.DeserializeObject<UserCounter>(requestBody);
+
+
+                item.TokblitzSaved = newItem.TokblitzSaved;
+                await Api<dynamic>.UpdateItemAsync(item.Id, item, Constants.PkRequest(item.PartitionKey));
                 return new OkResult();
             }
             catch (Exception e)
@@ -177,15 +177,7 @@ namespace AllisterFuncionsTrial
             }
         }
 
-
-
-
-
-
-
-
-
-
+   
         // new save games API
 
         [FunctionName("saveGamesFunction")]

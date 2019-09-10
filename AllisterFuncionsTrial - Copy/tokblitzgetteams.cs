@@ -16,6 +16,7 @@ using System.Reflection.Metadata;
 using AllisterFuncionsTrial.Services;
 using System.Collections;
 using Newtonsoft.Json.Serialization;
+using Microsoft.Azure.Documents.Linq;
 
 namespace AllisterFuncionsTrial
 {
@@ -35,7 +36,7 @@ namespace AllisterFuncionsTrial
             // append the {userlocalid}-tokblitzteam 
             string getId = id + "-tokblitzteam";
             // get all the team of a particular user
-            IEnumerable<tokblitzTeamClass> get_team = Teams.Where(x => x.owned_by == getId);
+            IEnumerable<tokblitzTeamClass> get_team = Teams.Where(x => x.UserId == getId);
             return new OkObjectResult(get_team);
         }
 
@@ -46,10 +47,10 @@ namespace AllisterFuncionsTrial
         {
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             tokblitzTeamClass getrequest = JsonConvert.DeserializeObject<tokblitzTeamClass>(requestBody);
-            getrequest.owned_by = getrequest.id + "-tokblitzteam";
-            getrequest.id = getrequest.id + Guid.NewGuid();
+            getrequest.UserId = getrequest.Id + "-tokblitzteam";
+            getrequest.Id = getrequest.Id + Guid.NewGuid();
 
-            var item = await Api<tokblitzTeamClass>.CreateItemAsyncGames(getrequest,Constants.PkRequest(getrequest.id));
+            var item = await Api<tokblitzTeamClass>.CreateItemAsyncGames(getrequest,Constants.PkRequest(getrequest.Id));
             return new OkResult();
         }
 
@@ -78,35 +79,13 @@ namespace AllisterFuncionsTrial
                 tokblitzTeamClass game = await Api<tokblitzTeamClass>.GetItemAsync(id, Constants.PkRequest(id));
                 tokblitzTeamClass holder = new tokblitzTeamClass();
 
-                if (newItem.id != null || newItem.id != "")
+                if (newItem.Id != null || newItem.Id != "")
                 {
+                 tokblitzTeamClass itemtoupdate =  TeamClassUpdater<tokblitzTeamClass>.TeamUpdater(newItem,game);
+                                                                
 
-
-                    if (newItem.country == null || newItem.country == "")
-                    {
-                        newItem.country = game.country;
-                    }
-                    if (newItem.teamname == null || newItem.teamname.Equals(""))
-                    {
-                        newItem.teamname = game.teamname;
-                    }
-              
-                    if (newItem.teamimage == null || newItem.teamimage.Equals(""))
-                    {
-                        newItem.teamimage = game.teamimage;
-                    }
-
-                    if (newItem.owned_by == null || newItem.owned_by.Equals(""))
-                    {
-                        newItem.owned_by = game.owned_by;
-                    }
-
-                    if (newItem.teampoints.Equals(null) || newItem.teampoints == 0)
-                    {
-                        newItem.teampoints = game.teampoints;
-                    }
-                  await Api<tokblitzTeamClass>.UpdateItemAsyncSaveGames(game.id, newItem, Constants.PkRequest(game.id));
-                    return new OkResult();
+                  var result =  await Api<tokblitzTeamClass>.UpdateItemAsyncSaveGames(game.Id, itemtoupdate, Constants.PkRequest(game.Id));
+                    return new OkObjectResult(result);
                 }
                 else
                 {
@@ -123,6 +102,59 @@ namespace AllisterFuncionsTrial
             }
       }
 
+
+        // gets the teams of a particular user
+        // just throw the user (localid) "select all wher owned_by = userlocalid-tokblitzteam";
+        [FunctionName("tokblitzgetteamsbychoice")]
+        public static async Task<IActionResult> tokblitzgetteamsbychoice([HttpTrigger(AuthorizationLevel.Function, "get", Route = Constants.Version + "/" + "getteamsbychoice/" + "{id}/"+"{topvalue}")]HttpRequest req, ILogger log,
+        ExecutionContext context, string id)
+        {
+            // set the get id to (userlocalid)-tokblitzteam
+            string getId = id + "-tokblitzteam";
+            //IDocumentQuery<tokblitzTeamClass> query;
+            //query = Constants.Client.CreateDocumentQuery<tokblitzTeamClass>(
+            //    UriFactory.CreateDocumentCollectionUri(Constants.DatabaseId, Constants.CollectionId),
+            //    _crosspartition)
+            //    .Where(x => x.Label == "team")
+            //    .OrderByDescending(x => x.TeamPoints)
+            //    .AsDocumentQuery();
+            ////.Where(x => x.UserId == getId)
+            ////.OrderByDescending(x => x.TeamPoints)
+            ////.AsDocumentQuery();
+
+            var sql = "SELECT TOP 100 * FROM Games Where Games.label ='team' Order By Games.team_points Desc";
+            var query = Constants.Client
+               .CreateDocumentQuery(UriFactory.CreateDocumentCollectionUri(Constants.DatabaseId, Constants.CollectionId), sql,
+                _crosspartition)
+               .AsDocumentQuery();
+
+            List<tokblitzTeamClass> results = new List<tokblitzTeamClass>();
+            List<tokblitzTeamClass> resultsForCaller = new List<tokblitzTeamClass>();
+            List<int> getPoints = new List<int>();
+            // put all the team in results
+
+            
+            if (query.HasMoreResults)
+            {
+
+                var result = await query.ExecuteNextAsync<tokblitzTeamClass>();
+                var count = 1;
+                foreach (var tt in result)
+                {
+
+                    tt.TeamRank = count;
+                    count++;
+
+                }
+                results.AddRange(result);
+                resultsForCaller.AddRange(results.Where(x => x.UserId == getId));
+
+            }
+
+          
+             return new OkObjectResult(resultsForCaller);
+            
+        }
 
 
 
