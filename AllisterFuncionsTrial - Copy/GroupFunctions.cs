@@ -100,50 +100,43 @@ namespace AllisterFuncionsTrial
 
             return new OkResult();
         }
+
         private static FeedOptions _crosspartition = new FeedOptions { MaxItemCount = -1, EnableCrossPartitionQuery = true };
+
         // check if the user has a room available and create if none
-        [FunctionName("GetRoom")]
-        public static async Task<IActionResult> GetUserRoom([HttpTrigger(AuthorizationLevel.Function, "post", Route = Constants.Version + "/getroom")]HttpRequest req, ILogger log,
+        [FunctionName("CreateRoom")]
+        public static async Task<IActionResult> CreateRoom([HttpTrigger(AuthorizationLevel.Function, "post", Route = Constants.Version + "/createroom")]HttpRequest req, ILogger log,
           ExecutionContext context)
         {
             try
-            {               
+            {
 
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 var getter = JsonConvert.DeserializeObject<TokBlitzRoom>(requestBody);
 
-              
-                //IDocumentQuery<TokBlitzRoom> query;
-                //query = Constants.Client.CreateDocumentQuery<TokBlitzRoom>(
-                //    UriFactory.CreateDocumentCollectionUri(Constants.DatabaseId, Constants.CollectionId),
-                //    _crosspartition)
-                //    .Where(x => x.RoomName == getter.RoomName && x.Label == "tokblitz_room")
-                //    .AsDocumentQuery();
+                IDocumentQuery<TokBlitzRoom> query;
+                query = Constants.Client.CreateDocumentQuery<TokBlitzRoom>(
+                    UriFactory.CreateDocumentCollectionUri(Constants.DatabaseId, Constants.CollectionId),
+                    _crosspartition)
+                    .Where(x => x.Label == "tokblitz_room" && x.RoomName ==  getter.RoomName)
+                    .AsDocumentQuery();
 
-                //if (query != null)
-                //{
-                //    return new NotFoundResult();
+                    var result = await query.ExecuteNextAsync<tokblitzTeamClass>();
 
-                //}
 
+                if (result.Count() > 0)
+                {
+                    return new BadRequestResult();
+
+                }
+                else {
 
 
                     var item = await Api<TokBlitzRoom>.CreateItemAsync(getter, Constants.PkRequest(getter.Id));
-
                     return new OkResult();
 
-            
-
-
-
-
-                //var item = await Api<TokBlitzRoom>.GetItemAsync(getter.roomId, Constants.PkRequest(getter.roomId));
-
-                //if (item == null)
-                //    return new NotFoundResult();
-
-
-
+                }
+                                               
             }
             catch (Exception e)
             {
@@ -171,7 +164,7 @@ public class TokBlitzRoom {
     public List<GamePlayer> Players { get; set; }
 
     [JsonProperty("label")]
-    public string Label { get; set; }
+    public string Label { get; set; } = "tokblitz_room";
 
     [JsonProperty("room_name")]
     public string RoomName { get; set; }

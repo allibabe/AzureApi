@@ -43,6 +43,7 @@ namespace AllisterFuncionsTrial
                 item.Toks = 0;
                 item.Dislikes = 0;
                 item.tokblitzNumTeam = 1;
+                item.IsRoomPurchasedTokBlitz = false;
 
                 await Api<UserCounter>.CreateItemAsyncKnowledge(item, Constants.PkRequest(item.PartitionKey));
                 return new OkResult();
@@ -53,6 +54,35 @@ namespace AllisterFuncionsTrial
             }
         }
 
-      
+        // this will update the room from false to true after buying in paypal
+        [FunctionName("updateUserRoom")]
+        public static async Task<IActionResult> updateUserRoom([HttpTrigger(AuthorizationLevel.Function, "post", Route = Constants.Version + "/" + "updateuserroom/" + "{id}")]HttpRequest req, ILogger log,
+         ExecutionContext context, string id)
+        {
+            try
+            {
+
+                var item = await Api<UserCounter>.GetItemAsyncInKnowledge(id +"-counter",Constants.PkRequest(id + "-counter"));
+                if (item == null)
+                    return new BadRequestResult();
+
+
+                item.IsRoomPurchasedTokBlitz = true;
+                await Api<UserCounter>.UpdateItemAsync(id +"-counter",item,Constants.PkRequest(id + "-counter"));
+                return new OkResult();
+
+             
+            }
+            catch (Exception e)
+            {
+                return new BadRequestObjectResult(e.Message);
+            }
+        }
+
+
+                                             
+
+
+
     }
 }

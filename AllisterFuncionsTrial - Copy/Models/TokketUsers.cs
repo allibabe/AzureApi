@@ -118,6 +118,11 @@ namespace AllisterFuncionsTrial.Models
         [JsonProperty("tokblitz_num_team", NullValueHandling = NullValueHandling.Ignore)]
         public int? tokblitzNumTeam { get; set; } = null;
 
+        //Group
+        [JsonProperty("room_purchased_tokblitz", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? IsRoomPurchasedTokBlitz { get; set; } = null;
+
+
         #endregion
 
 

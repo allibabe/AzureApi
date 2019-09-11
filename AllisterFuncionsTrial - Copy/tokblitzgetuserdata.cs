@@ -58,7 +58,7 @@ namespace AllisterFuncionsTrial
         }
 
 
-
+         // when user gets the data, tokketuser class and Usercounter should have the same equivalent class to be fetched
         public static TokketUsers SetCounts(this TokketUsers user, UserCounter counter)
         {
             if (counter == null)
@@ -98,6 +98,7 @@ namespace AllisterFuncionsTrial
                 user.SavedTokBlitz = (counter?.TokblitzSaved != null) ? (long)(counter?.TokblitzSaved) : 0;
                 user.SavedTokBlast = (counter?.TokblastSaved != null) ? (long)(counter?.TokblastSaved) : 0;
                 user.tokblitzNumTeam = (counter?.tokblitzNumTeam != null) ? (int)(counter?.tokblitzNumTeam) : 0;
+                user.IsRoomPurchasedTokBlitz = (counter?.IsRoomPurchasedTokBlitz != null) ? (bool)(counter?.IsRoomPurchasedTokBlitz) : false;
             }
 
             return user;

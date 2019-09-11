@@ -57,6 +57,11 @@ namespace AllisterFuncionsTrial.Models
         [JsonProperty("tokblitz_deleted_strikes", NullValueHandling = NullValueHandling.Ignore)]
         public long? DeletedStrikesTokBlitz { get; set; } = null;
 
+        //Group
+        [JsonProperty("room_purchased_tokblitz", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? IsRoomPurchasedTokBlitz { get; set; } = null;
+
+
         //[JsonProperty("tokblitz_saved", NullValueHandling = NullValueHandling.Ignore)]
         //public long? SavedTokBlitz { get; set; } = null;
         #endregion
